@@ -1,10 +1,13 @@
 const { User } = require('../models')
+const { hash } = require('../helpers/bcryptjs')
 
 class ControllerUser {
   static create(req, res) {
     let input = req.body
     let newUser = {
-      // - ============================================================
+      name: input.name,
+      email: input.email,
+      password: hash(input.password)
     }
     User.create(newUser)
       .then(data => {
@@ -28,6 +31,10 @@ class ControllerUser {
   }
   static update(req, res) {
   //! WARNING!: masih pake bcryptjs di sini====================================
+    if(req.body.password) {
+      let newPass = hash(req.body.password)
+      req.body.password = newPass
+    }
     User.findOneAndUpdate({_id: req.params.id}, req.body, { new: true })
     .then(user => {
       res.status(200).json(user)
