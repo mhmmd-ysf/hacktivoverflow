@@ -11,13 +11,14 @@ let answerSchema = new mongoose.Schema({
   },
   upvotes: Number,
   downvotes: Number,
-  questionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Question',
-  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+  },
+  userName: String,
+  questionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question',
   },
 })
 

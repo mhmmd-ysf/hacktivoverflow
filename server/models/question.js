@@ -15,6 +15,11 @@ let questionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  userName: String,
+  answers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Answer',
+  }],
 })
 
 let Question = mongoose.model('Question', questionSchema)

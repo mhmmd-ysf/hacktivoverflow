@@ -1,22 +1,37 @@
 const { Answer } = require('../models')
+const { Question } = require('../models')
 
 class ControllerAnswer {
   static create(req, res) {
-    console.log({
-      headers: req.headers,
-      body: req.body,
-      params: req.params,
-      dari: 'ControllerAnswer.Create'
-    })
+    // console.log({
+    //   headers: req.headers,
+    //   body: req.body,
+    //   params: req.params,
+    //   dari: 'ControllerAnswer.Create'
+    // })
     let input = req.body
     let newAnswer = {
       title: input.title,
       description: input.description,
-
+      upvotes: 1,
+      downvotes: 0,
+      userId: req.authenticated.id,
+      userName: req.authenticated.name,
+      questionId: input.questionId
     }
-    Answer.create(newAnswer)
-      .then(data => {
-        res.status(201).json({ token })
+    console.log(newAnswer)
+    let question
+    Question.findOne({_id: input.questionId})
+      .then((data) => {
+        question = data
+        return Answer.create(newAnswer)
+      })
+      .then((answer) => {
+        question.answers.push(answer._id)
+        return question.save()
+      })
+      .then(save => {
+        res.status(201).json(save)
       })
       .catch(err => res.status(500).json({ message: err.message }))
   }

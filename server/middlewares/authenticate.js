@@ -2,6 +2,7 @@ const { verify } = require('../helpers/jwt')
 const { User } = require('../models')
 
 module.exports = (req, res, next) => {
+  console.log({token: req.headers.token})
   try {
     const decode = verify(req.headers.token)
     User.findOne({

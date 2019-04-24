@@ -1,5 +1,7 @@
 const { User } = require('../models')
 const { hash } = require('../helpers/bcryptjs')
+const { sign } = require('../helpers/jwt')
+const { compare } = require('../helpers/bcryptjs')
 
 class ControllerUser {
   static create(req, res) {
@@ -11,7 +13,7 @@ class ControllerUser {
     }
     User.create(newUser)
       .then(data => {
-        res.status(201).json({ token })
+        res.status(201).json({ data })
       })
       .catch(err => res.status(500).json({ message: err.message }))
   }
@@ -62,11 +64,17 @@ class ControllerUser {
             res.status(401).json({ message: 'user tidak ada/ password salah' })
           } else {
             let obj = {
-              email,
-              password
+              id: user._id,
+              email: user.email,
+              name: user.name,
             }
-            let access_token = tokenify(obj, process.env.JWT_SECRET)
-            res.status(201).json({ access_token: access_token })
+            let access_token = sign(obj)
+            res.status(201).json({
+              access_token: access_token,
+              id: user._id,
+              email: user.email,
+              name: user.name,
+            })
           }
         }
       })
