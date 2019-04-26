@@ -2,6 +2,16 @@ const { User } = require('../models')
 const { hash } = require('../helpers/bcryptjs')
 const { sign } = require('../helpers/jwt')
 const { compare } = require('../helpers/bcryptjs')
+const { mailOpt, transporter } = require('../helpers/nodemailer')
+const kue = require('kue')
+const queue = kue.createQueue()
+
+queue.process('email', function(val, done) {
+  transporter.sendMail(mailOpt, function(error, info) {
+    if(error) throw error
+    else done()
+  })
+})
 
 class ControllerUser {
   static create(req, res) {
@@ -13,6 +23,7 @@ class ControllerUser {
     }
     User.create(newUser)
       .then(data => {
+        // mailOpt.to = input.email // buat ngirim email
         res.status(201).json({ data })
       })
       .catch(err => res.status(500).json({ message: err.message }))
